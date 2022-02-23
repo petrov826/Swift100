@@ -8,26 +8,27 @@
 import SwiftUI
 
 struct ContentView: View {
-    // use @State to make computed property mutable
-    // @State enables property one-way binding
-    // (computed property can read)
-    // prepend $ to make the property two-way binding
-    // (computed property can read and write back)
-    @State private var name = ""
-    @State private var tapCount = 0
+    let students = ["Harry", "Hermione", "Ron"]
+    @State private var selectedStudent = "Harry"
     
     var body: some View {
-        Form {
-            TextField("type your name here", text: $name)
-            // this is not two-way binding
-            Text("Your name is \(name)")
-            
-            // this is not two-way binding too
-            // Button("tap count: \(tapCount)") is
-            // just reading state property, not writing back
-            // we can change state in closure without $
-            Button("tap count: \(tapCount)") {
-                tapCount += 1
+        NavigationView {
+            Form {
+                // ForEach is a view that
+                // repeat view(s) inside closure for given range
+                // so it will repeat Text() 5 times
+                ForEach(0..<5) {
+                    Text("Row \($0)")
+                }
+                
+                // Picker is a view too
+                Picker("select a student", selection: $selectedStudent) {
+                    // loop over students. use value itself(string)
+                    // to identify each view
+                    ForEach(students, id: \.self) {
+                        Text($0)
+                    }
+                }
             }
         }
     }
