@@ -14,28 +14,36 @@ struct ContentView: View {
     
     @FocusState private var amountIsFocused: Bool
     
-    let tipPercentages = [0, 5, 10, 15, 20, 25]
+    let numberDisplayFormat = FloatingPointFormatStyle<Double>.Currency.currency(code: Locale.current.currencyCode ?? "USD")
     
-    var totalPerPerson: Double {
-        let peopleCount = Double(numberOfPeople + 2)
+    // let tipPercentages = [0, 5, 10, 15, 20, 25]
+    
+    var totalAmount: Double {
         let tipSelection = Double(tipPercentage)
         
         let tipValue = checkAmount * (tipSelection / 100)
         let grandTotal = checkAmount + tipValue
-        let amountPerPerson = grandTotal / peopleCount
+        
+        return grandTotal
+    }
+    
+    var totalPerPerson: Double {
+        let peopleCount = Double(numberOfPeople + 2)
+        let amountPerPerson = totalAmount / peopleCount
         
         return amountPerPerson
     }
     
     
     var body: some View {
+        // enable "Number of people" picker to navigate new view
         NavigationView {
             Form {
                 Section {
                     TextField(
                         "amount",
                         value: $checkAmount,
-                        format: .currency(code: Locale.current.currencyCode ?? "USD")
+                        format: numberDisplayFormat
                     )
                         .keyboardType(.decimalPad)
                         .focused($amountIsFocused)
@@ -54,16 +62,26 @@ struct ContentView: View {
                 
                 Section {
                     Picker("Tip percentage", selection: $tipPercentage) {
-                        ForEach(tipPercentages, id: \.self) {
+                        // ForEach(tipPercentages, id: \.self) {
+                        ForEach(0..<101) {
                             Text($0, format: .percent)
                         }
-                    }.pickerStyle(.segmented)
+                    }
+                    // .pickerStyle(.segmented)
                 } header: { // using second trailing closure
                     Text("How much tip do you want to leave?")
                 }
                 
                 Section {
-                    Text(totalPerPerson, format: .currency(code: Locale.current.currencyCode ?? "USD"))
+                    Text(totalAmount, format: .currency(code: Locale.current.currencyCode ?? "USD"))
+                } header: {
+                    Text("Total amount")
+                }
+                
+                Section {
+                    Text(totalPerPerson, format: numberDisplayFormat)
+                } header: {
+                    Text("Amount per person")
                 }
             }
             .navigationTitle("WeSplit")
