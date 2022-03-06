@@ -23,6 +23,12 @@ struct ContentView: View {
     // pick a correctAnswer from 3 countries
     @State private var correctAnswer = Int.random(in: 0...2)
     
+    @State private var currentScore = 0
+    @State private var currentQuestionCount = 0
+    let maxQuestionCount = 3
+    
+    @State private var showingRestartScreen = false
+    
     var body: some View {
         ZStack {
             LinearGradient(gradient: Gradient(colors: [.blue, .black]), startPoint: .top, endPoint: .bottom)
@@ -64,7 +70,10 @@ struct ContentView: View {
                 Spacer()
                 Spacer()
                 
-                Text("Score: ???")
+                Text("Score: \(currentScore)")
+                    .font(.title.bold())
+                    .foregroundColor(.white)
+                Text("\(maxQuestionCount - currentQuestionCount) questions left")
                     .font(.title.bold())
                     .foregroundColor(.white)
                 
@@ -76,7 +85,12 @@ struct ContentView: View {
             // player can try another question by tapping Continue button
             Button("Continue", action: askQuestion)
         } message: {
-            Text("Your score is ???")
+            Text("Your score is \(currentScore)")
+        }
+        .alert("Finished", isPresented: $showingRestartScreen) {
+            Button("Restart", action: restartGame)
+        } message: {
+            Text("Your final score is \(currentScore).\nYou can try again!")
         }
     }
     
@@ -84,15 +98,26 @@ struct ContentView: View {
     func flagTapped(_ number: Int) {
         if number == correctAnswer {
             scoreTitle = "Correct"
+            currentScore += 1
         } else {
-            scoreTitle = "Wrong"
+            scoreTitle = "Wrong!\nThat's the flag of \(countries[number])"
         }
         showingScore = true
+        currentQuestionCount += 1
+        if currentQuestionCount >= maxQuestionCount {
+            showingRestartScreen = true
+        }
     }
     
     func askQuestion() {
         countries = countries.shuffled()
         correctAnswer = Int.random(in: 0...2)
+    }
+    
+    func restartGame() {
+        currentScore = 0
+        currentQuestionCount = 0
+        showingRestartScreen = false
     }
 }
 
