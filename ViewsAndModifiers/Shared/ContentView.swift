@@ -69,6 +69,25 @@ extension View {
 }
 
 
+// day 24
+// create another custom modifier
+struct LargeBlueTitle: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .padding(6)
+            .font(.largeTitle)
+            .foregroundColor(.blue)
+            .background(.black)
+    }
+}
+
+extension View {
+    func largeBlueTitle() -> some View {
+        modifier(LargeBlueTitle())
+    }
+}
+
+
 struct ContentView: View {
     @State private var useRedText = false
     
@@ -131,8 +150,11 @@ struct ContentView: View {
             }
             
             Color.green
-                .frame(width: 300, height: 100)
+                .frame(width: 300, height: 50)
                 .watermarked(with: "Hacking with Swift")
+            
+            Text("Awesome!!")
+                .largeBlueTitle()
         }
     }
 }
