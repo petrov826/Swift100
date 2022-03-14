@@ -11,7 +11,7 @@ import SwiftUI
 struct BrainTrainingGameApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView2()
         }
     }
 }
