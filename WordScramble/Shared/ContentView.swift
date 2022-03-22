@@ -16,6 +16,8 @@ struct ContentView: View {
     @State private var errorMessage = ""
     @State private var showingError = false
     
+    @State private var currentScore = 0
+    
     var body: some View {
         NavigationView {
             List {
@@ -32,12 +34,15 @@ struct ContentView: View {
                         }
                     }
                 }
+                
+                Text("Your Score: \(currentScore)")
+                    .font(.title)
             }
             .navigationTitle(rootWord)
-            .onSubmit {
-                addNewWord()
+            .onSubmit { // when user typed return key...
+                addNewWord() // call this function
             }
-            .onAppear {
+            .onAppear { // similar to Unity's OnStart()
                 startGame()
             }
             .alert(errorTitle, isPresented: $showingError) {
@@ -45,13 +50,26 @@ struct ContentView: View {
             } message: {
                 Text(errorMessage)
             }
-            
+            .toolbar {
+                Button("New Game") {
+                    startGame()
+                }
+            }
         }
     }
     
     func addNewWord() {
         let answer = newWord.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
-        guard answer.count > 0 else { return }
+        
+        guard answer.count >= 3 else {
+            wordError(title: "Too Short Answer", message: "Use more than 3 letters")
+            return
+        }
+        
+        guard answer != rootWord else {
+            wordError(title: "Invaild Answer", message: "Your answer is rootWord")
+            return
+        }
     
         guard isOriginal(word: answer) else {
             wordError(title: "Word Already Used", message: "You can't use '\(answer)' twice")
@@ -64,14 +82,22 @@ struct ContentView: View {
         }
         
         guard isReal(word: answer) else {
-            wordError(title: "Word Not Recognized", message: "You can't just make up")
+            wordError(title: "Word Not Recognized", message: "No such word")
             return
         }
         
         withAnimation {
             usedWords.insert(answer, at: 0)
+            updateCurrentScore()
         }
         newWord = ""
+    }
+    
+    func updateCurrentScore() {
+        let wordLength = rootWord.count
+        let wordCount = usedWords.count
+        
+        currentScore += wordLength + wordCount * 2
     }
     
     func startGame() {
@@ -79,6 +105,8 @@ struct ContentView: View {
             if let startWords = try? String(contentsOf: startWordsURL) {
                 let allWords = startWords.components(separatedBy: "\n")
                 rootWord = allWords.randomElement() ?? "silkworm"
+                usedWords = [String]()
+                currentScore = 0
                 return
             }
         }
