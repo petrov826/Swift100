@@ -39,6 +39,11 @@ struct ContentView: View {
     
     @State private var showingRestartScreen = false
     
+    @State private var rotateDegree = 0.0
+    @State private var flagOpacity = 1.0
+    @State private var flagScale = 1.0
+    @State private var tappedFlagNum = 0
+    
     var body: some View {
         ZStack {
             LinearGradient(gradient: Gradient(colors: [.blue, .black]), startPoint: .top, endPoint: .bottom)
@@ -64,12 +69,24 @@ struct ContentView: View {
                     ForEach(0..<3) { number in
                         Button {
                             // On tapped, call this function
+                            tappedFlagNum = number
+                            withAnimation {
+                                rotateDegree += 360
+                                flagOpacity = 0.25
+                                flagScale = 0.75
+                            }
                             flagTapped(number)
                         } label: {
-//                            Image(countries[number])
-//                                .clipShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
-//                                .shadow(radius: 5)
+                            // Image(countries[number])
+                            //     .clipShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
+                            //     .shadow(radius: 5)
                             FlagImage(imageName: countries[number])
+                                .rotation3DEffect(
+                                    .degrees(tappedFlagNum == number ? rotateDegree : 0),
+                                    axis: (x: 0, y: 1, z: 0)
+                                )
+                                .opacity(tappedFlagNum != number ? flagOpacity : 1)
+                                .scaleEffect(tappedFlagNum != number ? flagScale : 1)
                         }
                     }
                 }
@@ -117,18 +134,28 @@ struct ContentView: View {
         currentQuestionCount += 1
         if currentQuestionCount >= maxQuestionCount {
             showingRestartScreen = true
+            showingScore = false
         }
     }
     
     func askQuestion() {
+        guard currentQuestionCount != maxQuestionCount else {
+            return
+        }
         countries = countries.shuffled()
         correctAnswer = Int.random(in: 0...2)
+        
+        // quick fix
+        flagOpacity = 1.0
+        flagScale = 1.0
     }
     
     func restartGame() {
         currentScore = 0
         currentQuestionCount = 0
         showingRestartScreen = false
+        showingScore = false
+        askQuestion()
     }
 }
 
