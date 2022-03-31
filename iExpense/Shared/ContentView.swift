@@ -7,49 +7,28 @@
 
 import SwiftUI
 
-// if we use class for UserStruct,
-// user is pointing to the instance of this class(not values)
-// when we update @State user, new instance will be created
-// but user is still pointing to the instance,
-// the change will not be reflected(value changes will not be shared)
-
-// if we use struct for UserStruct
-// user is pointing to the values themself(=struct)
-// when we update @State user, the old values will be discarded
-// and new one will be assigned.
-// so Text and TextField will access the same values
-// and the change will be reflected(value changes will be shared)
-struct UserStruct {
-    var firstName = "Tim"
-    var lastName = "Johnson"
-}
-
-// we can share an instance of this class
-// across multiple views
-class UserClass: ObservableObject {
-    @Published var firstName = "Jack"
-    @Published var lastName = "Bill"
-}
-
-struct ContentView: View {
-    @State private var userStruct = UserStruct()
-    @StateObject var userClass = UserClass()
+struct SecondView: View {
+    @Environment(\.dismiss) var dismiss
+    let name: String
     
     var body: some View {
-        Form {
-            Section("Struct") {
-                Text("Your name is \(userStruct.firstName) \(userStruct.lastName)")
-                            
-                TextField("First Name: ", text: $userStruct.firstName)
-                TextField("Last Name: ", text: $userStruct.lastName)
-            }
+        VStack {
+            Text("Hello \(name)! I'm second view!!")
             
-            Section("Class") {
-                Text("Your name is \(userClass.firstName) \(userClass.lastName)")
-                            
-                TextField("First Name: ", text: $userClass.firstName)
-                TextField("Last Name: ", text: $userClass.lastName)
+            Button("dismiss") {
+                dismiss()
             }
+        }
+    }
+}
+struct ContentView: View {
+    @State private var showingSheet = false
+    var body: some View {
+        Button("Show Sheet") {
+            showingSheet.toggle()
+        }
+        .sheet(isPresented: $showingSheet) {
+            SecondView(name: "Peter")
         }
     }
 }
