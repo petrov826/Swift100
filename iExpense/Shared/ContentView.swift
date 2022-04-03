@@ -8,33 +8,22 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var numbers = [Int]()
-    @State private var currentNumber = 1
+    @State private var tapCount1 = UserDefaults.standard.integer(forKey: "Tap")
+    // another option
+    // nice and short syntax. but can't score complex data type
+    @AppStorage("tapCount") private var tapCount2 = 0
     
     var body: some View {
-        NavigationView {
-            VStack {
-                List {
-                    ForEach(numbers, id: \.self) {
-                        Text("Row \($0)")
-                    }
-                    .onDelete(perform: removeRows)
-                }
-                
-                Button("Add Number") {
-                    numbers.append(currentNumber)
-                    currentNumber += 1
-                }
+        VStack(spacing: 20) {
+            Button("Tap Count1: \(tapCount1)") {
+                tapCount1 += 1
+                UserDefaults.standard.set(tapCount1, forKey: "Tap")
             }
-            .navigationTitle("onDelete()")
-            .toolbar {
-                EditButton()
+            
+            Button("Tap Count2: \(tapCount2)") {
+                tapCount2 += 1
             }
         }
-    }
-    
-    func removeRows(at offsets: IndexSet) {
-        numbers.remove(atOffsets: offsets)
     }
 }
 
