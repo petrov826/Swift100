@@ -7,21 +7,20 @@
 
 import SwiftUI
 
+struct User: Codable {
+    let firstName: String
+    let lastName: String
+}
+
 struct ContentView: View {
-    @State private var tapCount1 = UserDefaults.standard.integer(forKey: "Tap")
-    // another option
-    // nice and short syntax. but can't score complex data type
-    @AppStorage("tapCount") private var tapCount2 = 0
+    @State private var user = User(firstName: "Tom", lastName: "Jonny")
     
     var body: some View {
-        VStack(spacing: 20) {
-            Button("Tap Count1: \(tapCount1)") {
-                tapCount1 += 1
-                UserDefaults.standard.set(tapCount1, forKey: "Tap")
-            }
+        Button("Save User") {
+            let encoder = JSONEncoder()
             
-            Button("Tap Count2: \(tapCount2)") {
-                tapCount2 += 1
+            if let data = try? encoder.encode(user) {
+                UserDefaults.standard.set(data, forKey: "UserData")
             }
         }
     }
