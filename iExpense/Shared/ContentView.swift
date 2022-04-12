@@ -5,6 +5,8 @@
 //  Created by peterpetrov on 2022/03/31.
 //
 
+// TODO: try splitting the expenses list into two sections
+
 import SwiftUI
 
 struct ContentView: View {
@@ -34,10 +36,18 @@ struct ContentView: View {
                             Text(item.type)
                         }
                         Spacer()
-                        Text(item.amount, format: .currency(code: "USD"))
+                        Text(item.amount, format: .currency(code: item.currencyCode))
                     }
                 }
                 .onDelete(perform: removeItems)
+                
+                Section("Total Amount") {
+                    // items in not USD currency need to be converted to USD
+                    // I'll come back later
+                    Text(expenses.total, format: .currency(code: "USD"))
+                        .foregroundColor(getTotalAmountColor())
+                    
+                }
             }
             .navigationTitle("iExpense")
             .toolbar {
@@ -60,6 +70,16 @@ struct ContentView: View {
     
     func removeItems(at offsets: IndexSet) {
         expenses.items.remove(atOffsets: offsets)
+    }
+    
+    func getTotalAmountColor() -> Color {
+        if expenses.total <= 100 {
+            return Color.green
+        }
+        else if expenses.total <= 500 {
+            return Color.yellow
+        }
+        else { return Color.red }
     }
 }
 

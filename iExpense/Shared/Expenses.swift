@@ -19,6 +19,15 @@ class Expenses: ObservableObject {
         }
     }
     
+    var total: Double {
+        var _total = 0.0
+        
+        for item in items {
+            _total += item.amount
+        }
+        return _total
+    }
+    
     init() {
         // get json from UserDefaults
         if let savedItem = UserDefaults.standard.data(forKey: "Item") {
