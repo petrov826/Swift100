@@ -7,33 +7,50 @@
 
 import SwiftUI
 
-struct CustomText: View {
-    let text: String
-    
-    var body: some View {
-        Text(text)
-    }
-    
-    init(_ text: String) {
-        print("Created \(text)")
-        self.text = text
-    }
+// define 2 structs by mimicing
+// the structure of input JSON string
+struct User: Codable {
+    let name: String
+    let address: Address
+}
+
+struct Address: Codable {
+    let street: String
+    let city: String
 }
 
 struct ContentView: View {
+    @State private var decodedUser = User(name: "", address: Address(street: "", city: ""))
+    
     var body: some View {
-        NavigationView {
-            List(0..<20) { row in
-                NavigationLink {
-                    // destination
-                    Text("Detail \(row)")
-                } label: {
-                    // this is Button
-                    Text("Row \(row)")
+        VStack(spacing: 30) {
+            Button("Decode JSON") {
+                let input = """
+                {
+                    "name": "Jack",
+                    "address": {
+                        "street": "Apple Street",
+                        "city": "San Jose"
+                    }
+                }
+                """
+                
+                let data = Data(input.utf8)
+                
+                if let user = try? JSONDecoder().decode(User.self, from: data) {
+                    decodedUser = user
                 }
             }
-            .navigationTitle("SwiftUI")
+            
+            Text("Decode Result")
+            
+            VStack(alignment: .leading) {
+                Text("name: \(decodedUser.name)")
+                Text("street: \(decodedUser.address.street)")
+                Text("city: \(decodedUser.address.city)")
+            }
         }
+        
     }
 }
 
