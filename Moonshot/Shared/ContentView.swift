@@ -22,18 +22,17 @@ struct CustomText: View {
 
 struct ContentView: View {
     var body: some View {
-        ScrollView {
-            // using VStack, all views inside will be created
-            // at first. we can avoid it by using LazyVStack
-            // LazyVStack takes full available space,
-            // so no need for .frame(maxWidth: .infinity)
-            LazyVStack {
-                ForEach(0..<100) {
-                    CustomText("Item \($0)")
-                        .font(.title)
+        NavigationView {
+            List(0..<20) { row in
+                NavigationLink {
+                    // destination
+                    Text("Detail \(row)")
+                } label: {
+                    // this is Button
+                    Text("Row \(row)")
                 }
             }
-            // .frame(maxWidth: .infinity)
+            .navigationTitle("SwiftUI")
         }
     }
 }
