@@ -7,22 +7,33 @@
 
 import SwiftUI
 
+struct CustomText: View {
+    let text: String
+    
+    var body: some View {
+        Text(text)
+    }
+    
+    init(_ text: String) {
+        print("Created \(text)")
+        self.text = text
+    }
+}
+
 struct ContentView: View {
     var body: some View {
-        GeometryReader { geo in
-            Image("SwiftUI_course")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                // frame height will be inferred
-                // by contentMode: .fit and frame width
-                .frame(
-                    width: geo.size.width * 0.8
-                )
-                // move the image to the center of the screen
-                .frame(
-                    width: geo.size.width,
-                    height: geo.size.height
-                )
+        ScrollView {
+            // using VStack, all views inside will be created
+            // at first. we can avoid it by using LazyVStack
+            // LazyVStack takes full available space,
+            // so no need for .frame(maxWidth: .infinity)
+            LazyVStack {
+                ForEach(0..<100) {
+                    CustomText("Item \($0)")
+                        .font(.title)
+                }
+            }
+            // .frame(maxWidth: .infinity)
         }
     }
 }
