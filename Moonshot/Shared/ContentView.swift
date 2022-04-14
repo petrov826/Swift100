@@ -8,27 +8,11 @@
 import SwiftUI
 
 struct ContentView: View {
-    let layout1 = [
-        GridItem(.fixed(80)),
-        GridItem(.fixed(80)),
-        GridItem(.fixed(80)),
-    ]
-    
-    let layout2 = [
-        // #columns is adaptive
-        // (increase or decrease by screen width)
-        // more columns in landscape mode
-        GridItem(.adaptive(minimum: 80))
-    ]
+    let astronauts = Bundle.main.decode("astronauts.json")
     
     var body: some View {
-        ScrollView {
-            LazyVGrid(columns: layout2) {
-                ForEach(0..<200) {
-                    Text("Item \($0)")
-                }
-            }
-        }
+        Text("\(astronauts.count)")
+            .padding()
     }
 }
 
