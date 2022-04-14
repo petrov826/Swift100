@@ -7,50 +7,28 @@
 
 import SwiftUI
 
-// define 2 structs by mimicing
-// the structure of input JSON string
-struct User: Codable {
-    let name: String
-    let address: Address
-}
-
-struct Address: Codable {
-    let street: String
-    let city: String
-}
-
 struct ContentView: View {
-    @State private var decodedUser = User(name: "", address: Address(street: "", city: ""))
+    let layout1 = [
+        GridItem(.fixed(80)),
+        GridItem(.fixed(80)),
+        GridItem(.fixed(80)),
+    ]
+    
+    let layout2 = [
+        // #columns is adaptive
+        // (increase or decrease by screen width)
+        // more columns in landscape mode
+        GridItem(.adaptive(minimum: 80))
+    ]
     
     var body: some View {
-        VStack(spacing: 30) {
-            Button("Decode JSON") {
-                let input = """
-                {
-                    "name": "Jack",
-                    "address": {
-                        "street": "Apple Street",
-                        "city": "San Jose"
-                    }
+        ScrollView {
+            LazyVGrid(columns: layout2) {
+                ForEach(0..<200) {
+                    Text("Item \($0)")
                 }
-                """
-                
-                let data = Data(input.utf8)
-                
-                if let user = try? JSONDecoder().decode(User.self, from: data) {
-                    decodedUser = user
-                }
-            }
-            
-            Text("Decode Result")
-            
-            VStack(alignment: .leading) {
-                Text("name: \(decodedUser.name)")
-                Text("street: \(decodedUser.address.street)")
-                Text("city: \(decodedUser.address.city)")
             }
         }
-        
     }
 }
 
