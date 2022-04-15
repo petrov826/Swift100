@@ -16,7 +16,20 @@ struct Mission: Codable, Identifiable {
     }
     
     let id: Int
-    let launchData: String?
+    let launchDate: Date? // String?
     let crew: [Crew]
     let description: String
+    
+    var displayName: String {
+        "Apollo \(id)"
+    }
+    
+    var imageName: String {
+        // apollo11
+        "apollo\(id)"
+    }
+    
+    var formattedLaunchDate: String {
+        launchDate?.formatted(date: .abbreviated, time: .omitted) ?? "N/A"
+    }
 }

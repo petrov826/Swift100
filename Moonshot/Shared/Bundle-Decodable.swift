@@ -29,8 +29,14 @@ extension Bundle {
             fatalError("Failed to load \(file) from Bundle")
         }
         
+        let decoder = JSONDecoder()
+        // tell Swift how to decode dates by dateFormat
+        let formatter = DateFormatter()
+        formatter.dateFormat = "y-MM-dd"
+        decoder.dateDecodingStrategy = .formatted(formatter)
+        
         // try to decode the data
-        guard let decoded = try? JSONDecoder().decode(T.self, from: data) else {
+        guard let decoded = try? decoder.decode(T.self, from: data) else {
             fatalError("Failed to decode \(file)")
         }
         
