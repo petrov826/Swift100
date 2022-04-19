@@ -15,46 +15,37 @@ struct ContentView: View {
         GridItem(.adaptive(minimum: 150))
     ]
     
+    @State private var showInGrid = false
+    
     var body: some View {
         NavigationView {
             ScrollView {
-                LazyVGrid(columns: columns) {
-                    ForEach(missions) { mission in
-                        NavigationLink {
-                            MissionView(mission: mission, astronauts: astronauts)
-                        } label: {
-                            VStack {
-                                Image(mission.imageName)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 100, height: 100)
-                                    .padding(.top)
-                                
-                                VStack {
-                                    Text(mission.displayName)
-                                        .font(.headline)
-                                        .foregroundColor(.white)
-                                    Text(mission.formattedLaunchDate)
-                                        .font(.caption)
-                                        .foregroundColor(.white.opacity(0.5))
-                                }
-                                .padding(.vertical)
-                                .frame(maxWidth: .infinity)
-                                .background(.lightBackground)
-                            }
-                            .clipShape(RoundedRectangle(cornerRadius: 20))
-                            .overlay {
-                                RoundedRectangle(cornerRadius: 20)
-                                    .stroke()
-                            }
-                        }
+                if showInGrid {
+                    LazyVGrid(columns: columns) {
+                        MissionItemsView(missions: missions, astronauts: astronauts)
                     }
+                    .padding([.horizontal, .bottom])
+                } else {
+                    // not looking cool...
+                    // I'll fix this later
+                    VStack {
+                        MissionItemsView(missions: missions, astronauts: astronauts)
+                    }
+                    .padding([.horizontal, .bottom])
                 }
-                .padding([.horizontal, .bottom])
             }
             .navigationTitle("Moonshot")
             .background(.darkBackground)
             .preferredColorScheme(.dark)
+            .toolbar {
+                Button {
+                    withAnimation {
+                        showInGrid.toggle()
+                    }
+                } label: {
+                    Image(systemName: "list.bullet.circle")
+                }
+            }
         }
     }
 }
@@ -62,5 +53,43 @@ struct ContentView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
+    }
+}
+
+struct MissionItemsView: View {
+    let missions: [Mission]
+    let astronauts: [String: Astronaut]
+    
+    var body: some View {
+        ForEach(missions) { mission in
+            NavigationLink {
+                MissionView(mission: mission, astronauts: astronauts)
+            } label: {
+                VStack {
+                    Image(mission.imageName)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 100, height: 100)
+                        .padding(.top)
+                    
+                    VStack {
+                        Text(mission.displayName)
+                            .font(.headline)
+                            .foregroundColor(.white)
+                        Text(mission.formattedLaunchDate)
+                            .font(.caption)
+                            .foregroundColor(.white.opacity(0.5))
+                    }
+                    .padding(.vertical)
+                    .frame(maxWidth: .infinity)
+                    .background(.lightBackground)
+                }
+                .clipShape(RoundedRectangle(cornerRadius: 20))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 20)
+                        .stroke()
+                }
+            }
+        }
     }
 }
