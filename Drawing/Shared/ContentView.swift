@@ -7,54 +7,45 @@
 
 import SwiftUI
 
-struct Triangle: Shape {
+struct Flower: Shape{
+    var petalOffset = -20.0
+    var petalWidth = 100.0
+    
     func path(in rect: CGRect) -> Path {
         var path = Path()
         
-        // x is right arrow, y is down arrow
-        path.move(to: CGPoint(x: rect.midX, y: rect.minY))
-        path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
-        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
-        path.addLine(to: CGPoint(x: rect.midX, y: rect.minY))
+        // similar to `for number in range(0, math.pi * 2, math.pi / 8)` in python
+        for number in stride(from: 0, to: Double.pi * 2, by: Double.pi / 8) {
+            let rotation = CGAffineTransform(rotationAngle: number)
+            let position = rotation.concatenating(
+                CGAffineTransform(translationX: rect.width / 2, y: rect.height / 2)
+            )
+            let originalPetal = Path(ellipseIn: CGRect(x: petalOffset, y: 0, width: petalWidth, height: rect.width / 2))
+            let rotatedPetal = originalPetal.applying(position)
+            
+            path.addPath(rotatedPetal)
+        }
         
         return path
-    }
-}
-
-struct Arc: InsettableShape {
-    let startAngle: Angle
-    let endAngle: Angle
-    let clockwise: Bool
-    var insetAmount = 0.0
-    
-    func path(in rect: CGRect) -> Path {
-        let rotationAjustment = Angle.degrees(90)
-        let modifiedStart = startAngle - rotationAjustment
-        let modifiedEnd = endAngle - rotationAjustment
-        
-        var path = Path()
-        
-        path.addArc(center: CGPoint(x: rect.midX, y: rect.midY), radius: rect.size.width / 2 - insetAmount, startAngle: modifiedStart, endAngle: modifiedEnd  , clockwise: !clockwise)
-        
-        return path
-    }
-    
-    func inset(by amount: CGFloat) -> some InsettableShape {
-        var arc = self
-        arc.insetAmount += amount
-        return arc
     }
 }
 
 struct ContentView: View {
+    @State private var petalOffset = -20.0
+    @State private var petalWidth = 100.0
+    
     var body: some View {
         VStack {
-            Circle()
-                // .stroke(.blue, lineWidth: 40) // half of the line go out of the frame
-                .strokeBorder(.blue, lineWidth: 40) // circle and line are in the frame
+            Flower(petalOffset: petalOffset, petalWidth: petalWidth)
+                .stroke(.red, lineWidth: 1)
             
-            Arc(startAngle: .degrees(-90), endAngle: .degrees(90), clockwise: true)
-                .strokeBorder(.red, lineWidth: 40)
+            Text("Offset")
+            Slider(value: $petalOffset, in: -40...40)
+                .padding([.horizontal, .bottom])
+            
+            Text("Width")
+            Slider(value: $petalWidth, in: 0...100)
+                .padding(.horizontal)
         }
     }
 }
