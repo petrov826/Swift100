@@ -21,10 +21,11 @@ struct Triangle: Shape {
     }
 }
 
-struct Arc: Shape {
+struct Arc: InsettableShape {
     let startAngle: Angle
     let endAngle: Angle
     let clockwise: Bool
+    var insetAmount = 0.0
     
     func path(in rect: CGRect) -> Path {
         let rotationAjustment = Angle.degrees(90)
@@ -33,22 +34,27 @@ struct Arc: Shape {
         
         var path = Path()
         
-        path.addArc(center: CGPoint(x: rect.midX, y: rect.midY), radius: rect.size.width / 2, startAngle: modifiedStart, endAngle: modifiedEnd  , clockwise: !clockwise)
+        path.addArc(center: CGPoint(x: rect.midX, y: rect.midY), radius: rect.size.width / 2 - insetAmount, startAngle: modifiedStart, endAngle: modifiedEnd  , clockwise: !clockwise)
         
         return path
+    }
+    
+    func inset(by amount: CGFloat) -> some InsettableShape {
+        var arc = self
+        arc.insetAmount += amount
+        return arc
     }
 }
 
 struct ContentView: View {
     var body: some View {
         VStack {
-            Triangle()
-                .fill(.green)
-                .frame(width: 300, height: 300)
+            Circle()
+                // .stroke(.blue, lineWidth: 40) // half of the line go out of the frame
+                .strokeBorder(.blue, lineWidth: 40) // circle and line are in the frame
             
-            Arc(startAngle: .degrees(0), endAngle: .degrees(270), clockwise: true)
-                .stroke(.red, lineWidth: 10)
-                .frame(width: 300, height: 300)
+            Arc(startAngle: .degrees(-90), endAngle: .degrees(90), clockwise: true)
+                .strokeBorder(.red, lineWidth: 40)
         }
     }
 }
