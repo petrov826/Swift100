@@ -7,44 +7,53 @@
 
 import SwiftUI
 
-struct Flower: Shape{
-    var petalOffset = -20.0
-    var petalWidth = 100.0
+struct ColorCyclingCircle: View {
+    var amount = 0.0
+    var steps = 100
     
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        
-        // similar to `for number in range(0, math.pi * 2, math.pi / 8)` in python
-        for number in stride(from: 0, to: Double.pi * 2, by: Double.pi / 8) {
-            let rotation = CGAffineTransform(rotationAngle: number)
-            let position = rotation.concatenating(
-                CGAffineTransform(translationX: rect.width / 2, y: rect.height / 2)
-            )
-            let originalPetal = Path(ellipseIn: CGRect(x: petalOffset, y: 0, width: petalWidth, height: rect.width / 2))
-            let rotatedPetal = originalPetal.applying(position)
-            
-            path.addPath(rotatedPetal)
+    var body: some View {
+        ZStack {
+            ForEach(0..<steps) { value in
+                Circle()
+                    .inset(by: Double(value))
+                    // .strokeBorder(color(for: value, brightness: 1), lineWidth: 2)
+                    .strokeBorder(
+                        LinearGradient(
+                            gradient: Gradient(colors: [
+                                color(for: value, brightness: 1),
+                                color(for: value, brightness: 0.5)
+                            ]),
+                            startPoint: .top,
+                            endPoint: .bottom
+                        ),
+                        lineWidth: 2
+                    )
+            }
         }
+        // 2nd strokeBorder is way too slow
+        // we can fix this by applying drawingGroup
+        .drawingGroup()
+    }
+    
+    func color(for value: Int, brightness: Double) -> Color {
+        var targetHue = Double(value) / Double(steps) + amount
         
-        return path
+        if targetHue > 1.0 {
+            targetHue -= 1
+        }
+        return Color(hue: targetHue, saturation: 1, brightness: brightness)
     }
 }
 
 struct ContentView: View {
-    @State private var petalOffset = -20.0
-    @State private var petalWidth = 100.0
+    @State private var colorCycle = 0.0
     
     var body: some View {
         VStack {
-            Flower(petalOffset: petalOffset, petalWidth: petalWidth)
-                .stroke(.red, lineWidth: 1)
+            ColorCyclingCircle(amount: colorCycle)
+                .frame(width: 300, height: 300)
             
-            Text("Offset")
-            Slider(value: $petalOffset, in: -40...40)
-                .padding([.horizontal, .bottom])
-            
-            Text("Width")
-            Slider(value: $petalWidth, in: 0...100)
+            Slider(value: $colorCycle)
                 .padding(.horizontal)
         }
     }
