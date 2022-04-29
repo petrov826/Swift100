@@ -7,24 +7,39 @@
 
 import SwiftUI
 
+struct Trapezoid: Shape {
+    var insetAmount: Double
+    
+    var animatableData: Double {
+        get { insetAmount }
+        set { insetAmount = newValue }
+    }
+    
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        
+        // clockwise
+        path.move(to: CGPoint(x: 0, y: rect.maxY)) // bottom left
+        path.addLine(to: CGPoint(x: insetAmount, y: rect.minY)) // top left
+        path.addLine(to: CGPoint(x: rect.maxX - insetAmount, y: rect.minY)) // top right
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY)) // bottom right
+        path.addLine(to: CGPoint(x: 0, y: rect.maxY)) // bottom left
+        
+        return path
+    }
+}
+
 struct ContentView: View {
-    @State private var amount = 0.0
+    @State private var amount = 5.0
     
     var body: some View {
-        VStack {
-            Image("PaulHudson")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 200, height: 200)
-                .saturation(amount) // monochrome to full color
-                .blur(radius: (1 - amount) * 20)
-            
-            Slider(value: $amount)
-                .padding()
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(.black)
-        .ignoresSafeArea()
+        Trapezoid(insetAmount: amount)
+            .frame(width: 200, height: 200)
+            .onTapGesture {
+                withAnimation {
+                    amount = Double.random(in: 10...90)
+                }
+            }
     }
 }
 
