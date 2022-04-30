@@ -7,57 +7,35 @@
 
 import SwiftUI
 
-struct Checkerboard: Shape {
-    // rows and columns CAN be changed over time
-    // so use var instead of let
-    var rows: Int
-    var columns: Int
-    
-    var animatableData: AnimatablePair<Double, Double> {
-        get {
-            AnimatablePair(Double(rows), Double(columns))
-        }
-        
-        set {
-            rows = Int(newValue.first)
-            columns = Int(newValue.second)
-        }
-    }
-    
+struct Arrow: Shape {
     func path(in rect: CGRect) -> Path {
         var path = Path()
         
-        let rowSize = rect.height / Double(rows)
-        let columnSize = rect.width / Double(columns)
+        path.move(to: CGPoint(x: rect.width / 2, y: rect.maxY)) // bottom
+        path.addLine(to: CGPoint(x: rect.width / 2, y: rect.minY)) // top
         
-        for row in 0..<rows {
-            for column in 0..<columns {
-                if (row + column).isMultiple(of: 2) {
-                    let startX = columnSize * Double(column)
-                    let startY = rowSize * Double(row)
-                    
-                    let rect = CGRect(x: startX, y: startY, width: columnSize, height: rowSize)
-                    path.addRect(rect)
-                }
-            }
-        }
+        path.addLine(to: CGPoint(x: rect.width / 4, y: rect.height / 4)) // left
+        path.move(to: CGPoint(x: rect.width / 2, y: rect.minY)) // top
         
+        path.addLine(to: CGPoint(x: rect.width * 3 / 4, y: rect.height / 4)) // right
+        path.addLine(to: CGPoint(x: rect.width / 2, y: rect.minY)) // top
+
         return path
     }
 }
 
 struct ContentView: View {
-    @State private var rows = 4
-    @State private var columns = 4
+    @State private var lineWidth = 10.0
     
     var body: some View {
-        Checkerboard(rows: rows, columns: columns)
-            .onTapGesture {
-                withAnimation(.linear(duration: 3)) {
-                    rows = 8
-                    columns = 16
-                }
-            }
+        VStack {
+            Arrow()
+                .stroke(.green, style: StrokeStyle(lineWidth: lineWidth, lineCap: .round, lineJoin: .round))
+            .frame(width: 300, height: 300)
+            
+            Slider(value: $lineWidth, in: 5...30)
+                .padding()
+        }
     }
 }
 
