@@ -8,35 +8,28 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var username = ""
+    @State private var email = ""
+    
     var body: some View {
-        VStack {
-            AsyncImage(url: URL(string: "https://hws.dev/img/logo.png")) { image in
-                // there's no condition in the content,
-                // "image" will be type of Image
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-            } placeholder: {
-                // Color.red
-                ProgressView() // display spiner while downloading
+        Form {
+            Section {
+                TextField("User Name", text: $username)
+                TextField("Email", text: $email)
             }
-            .frame(width: 200, height: 200)
             
-            AsyncImage(url: URL(string: "https://hws.dev/img/bad.png")) { phase in
-                // if the content of closure has condition,
-                // "phase" will be type of AsyncImagePhase not Image
-                if let image = phase.image {
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                } else if phase.error != nil {
-                    Text("There was an error loading the image")
-                } else {
-                    ProgressView()
+            Section {
+                Button("Create Account") {
+                    print("creating an account")
                 }
             }
-            .frame(width: 200, height: 200)
+            // .disabled(username.isEmpty || email.isEmpty)
+            .disabled(disableForm) // we can computed property too
         }
+    }
+    
+    var disableForm: Bool {
+        username.count < 5 || email.count < 8
     }
 }
 
