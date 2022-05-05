@@ -7,50 +7,35 @@
 
 import SwiftUI
 
-struct Response: Codable {
-    var results: [Result]
-}
-
-struct Result: Codable {
-    var trackId: Int
-    var trackName: String
-    var collectionName: String
-}
-
 struct ContentView: View {
-    @State private var results = [Result]()
-    
     var body: some View {
-        List(results, id: \.trackId) { item in
-            VStack(alignment: .leading) {
-                Text(item.trackName)
-                    .font(.headline)
-                
-                Text(item.collectionName)
+        VStack {
+            AsyncImage(url: URL(string: "https://hws.dev/img/logo.png")) { image in
+                // there's no condition in the content,
+                // "image" will be type of Image
+                image
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+            } placeholder: {
+                // Color.red
+                ProgressView() // display spiner while downloading
             }
-        }
-        .task {
-            await loadData()
-        }
-    }
-    
-    func loadData() async {
-        // convert string to URL. If failed, stop there
-        guard let url = URL(string: "https://itunes.apple.com/search?term=taylor+swift&entity=song") else {
-            print("Invalid URL")
-            return
-        }
-        
-        do {
-            // toss away metadata with _
-            // data isn't decoded yet
-            let (data, _) = try await URLSession.shared.data(from: url)
+            .frame(width: 200, height: 200)
             
-            if let decodedData = try? JSONDecoder().decode(Response.self, from: data) {
-                results = decodedData.results
+            AsyncImage(url: URL(string: "https://hws.dev/img/bad.png")) { phase in
+                // if the content of closure has condition,
+                // "phase" will be type of AsyncImagePhase not Image
+                if let image = phase.image {
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                } else if phase.error != nil {
+                    Text("There was an error loading the image")
+                } else {
+                    ProgressView()
+                }
             }
-        } catch {
-            print("Invalid Data")
+            .frame(width: 200, height: 200)
         }
     }
 }
