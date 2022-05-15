@@ -8,28 +8,42 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var username = ""
-    @State private var email = ""
+    // sourse of truth
+    @StateObject var order = Order()
     
     var body: some View {
-        Form {
-            Section {
-                TextField("User Name", text: $username)
-                TextField("Email", text: $email)
-            }
-            
-            Section {
-                Button("Create Account") {
-                    print("creating an account")
+        NavigationView {
+            Form {
+                Section {
+                    Picker("Cake Type", selection: $order.type) {
+                        ForEach(Order.types.indices, id: \.self) { index in
+                            Text(Order.types[index])
+                        }
+                    }
+                    
+                    Stepper("Number of Cakes: \(order.quantity)", value: $order.quantity, in: 3...20)
+                }
+                
+                Section {
+                    Toggle("Any special requests?", isOn: $order.specialRequestEnabled.animation())
+                    
+                    if order.specialRequestEnabled {
+                        Toggle("Add extra frosting", isOn: $order.extraFrosting)
+                        
+                        Toggle("Add extra sprinkles", isOn: $order.addSprinkles)
+                    }
+                }
+                
+                Section {
+                    NavigationLink {
+                        AddressView(order: order)
+                    } label: {
+                        Text("Delivery detail")
+                    }
                 }
             }
-            // .disabled(username.isEmpty || email.isEmpty)
-            .disabled(disableForm) // we can computed property too
+            .navigationTitle("Cupcake Corner")
         }
-    }
-    
-    var disableForm: Bool {
-        username.count < 5 || email.count < 8
     }
 }
 
