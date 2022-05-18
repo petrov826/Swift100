@@ -4,7 +4,6 @@
 //
 //  Created by peterpetrov on 2022/05/08.
 //
-
 import SwiftUI
 
 struct CheckoutView: View {
@@ -51,7 +50,7 @@ struct CheckoutView: View {
             print("Failed to encode")
             return
         }
-        git
+        
         // prepare for uploading
         let url = URL(string: "https://reqres.in/api/cupcakes")!
         var request = URLRequest(url: url)
