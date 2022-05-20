@@ -97,5 +97,6 @@ iOSInjectionProject/
 *.xcplayground
 .DS_Store
 *.mlmodel
+*.txt
 
 # End of https://www.toptal.com/developers/gitignore/api/swift
