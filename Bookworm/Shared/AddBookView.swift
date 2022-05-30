@@ -60,13 +60,24 @@ struct AddBookView: View {
                         newBook.genre = genre
                         newBook.review = review
                         newBook.rating = Int16(rating)
+                        newBook.date = Date.now
                         
                         try? moc.save()
                         dismiss()
                     }
+                    .disabled(!isValidInput) // disable if not valid
                 }
             }
             .navigationTitle("Add book")
+        }
+    }
+    
+    var isValidInput: Bool {
+        // if title, author and genre are not empty, it's valid
+        if !title.isEmpty && !author.isEmpty && !genre.isEmpty {
+            return true
+        } else {
+            return false
         }
     }
 }

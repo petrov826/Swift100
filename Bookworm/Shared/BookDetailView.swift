@@ -30,15 +30,23 @@ struct BookDetailView: View {
                     .clipShape(Capsule())
                     .offset()
             }
-            Text(book.author ?? "Unknown Author")
+            Text("Written by \(book.author ?? "Unknown Author")")
                 .font(.title)
                 .foregroundColor(.secondary)
             
             Text(book.review ?? "No Review")
                 .padding()
             
+            HStack {
+                Spacer()
+                Text(book.date?.formatted(date: .abbreviated, time: .omitted) ?? "Long ago")
+                    .font(.subheadline)
+            }
+            .padding([.trailing, .bottom])
+            
             RatingView(rating: .constant(Int(book.rating)))
                 .font(.largeTitle)
+            
             
         }
         .navigationTitle(book.title ?? "Unknown Title")
