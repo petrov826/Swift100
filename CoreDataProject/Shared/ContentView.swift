@@ -33,15 +33,16 @@ struct ContentView: View {
             ForEach(students, id: \.self) { student in
                 Text(student.name)
             }
-        }
-        
-        Button("Save") {
-            // avoid unnecessary saving
-            if moc.hasChanges {
-                try? moc.save()
+            
+            Divider()
+            
+            Button("Save") {
+                // avoid unnecessary saving
+                if moc.hasChanges {
+                    try? moc.save()
+                }
             }
         }
-        
     }
 }
 
