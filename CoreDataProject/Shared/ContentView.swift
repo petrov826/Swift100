@@ -7,39 +7,31 @@
 
 import SwiftUI
 
-struct Student: Hashable {
-    let name: String // String conforms to Hashable by default
-}
-
 struct ContentView: View {
     @Environment(\.managedObjectContext) var moc
-    
-    let students = [
-        Student(name: "Harry Potter"),
-        Student(name: "Hermione Granger")
-    ]
+    @FetchRequest(sortDescriptors: []) var wizards: FetchedResults<Wizard>
     
     var body: some View {
-        List {
-            // so... what is "id: \.self" doing?
-            // for each element -> hash value
-            // and use them to identity each view
-            ForEach([2, 4, 6, 8, 10], id: \.self) {
-                Text("\($0) is even")
+        VStack {
+            List(wizards, id: \.self) { wizard in
+                Text(wizard.name ?? "Unknown")
             }
             
-            Divider()
-            
-            ForEach(students, id: \.self) { student in
-                Text(student.name)
+            Button("Add") {
+                // without wizard.append(wizard) or something,
+                // new wizard will be append to the wizards
+                // by saying Wizard(context: moc)
+                let wizard = Wizard(context: moc)
+                // without this line, the empty item will be added
+                // ("Unknown" will be displayed)
+                wizard.name = "Harry Potter"
             }
-            
-            Divider()
             
             Button("Save") {
-                // avoid unnecessary saving
-                if moc.hasChanges {
-                    try? moc.save()
+                do {
+                    try moc.save()
+                } catch {
+                    print(error.localizedDescription)
                 }
             }
         }
