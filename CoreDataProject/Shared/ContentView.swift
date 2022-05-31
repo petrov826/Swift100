@@ -12,6 +12,8 @@ struct Student: Hashable {
 }
 
 struct ContentView: View {
+    @Environment(\.managedObjectContext) var moc
+    
     let students = [
         Student(name: "Harry Potter"),
         Student(name: "Hermione Granger")
@@ -33,6 +35,12 @@ struct ContentView: View {
             }
         }
         
+        Button("Save") {
+            // avoid unnecessary saving
+            if moc.hasChanges {
+                try? moc.save()
+            }
+        }
         
     }
 }
