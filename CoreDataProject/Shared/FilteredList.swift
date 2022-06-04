@@ -7,6 +7,10 @@
 
 import SwiftUI
 
+enum Predicates {
+case LIKE, CONTAINS, MATCHES, BEGINSWITH, ENDSWITH
+}
+
 struct FilteredList: View {
     @FetchRequest var fetchRequest: FetchedResults<Singer>
     
@@ -16,10 +20,10 @@ struct FilteredList: View {
         }
     }
     
-    init(filter: String) {
+    init(filter: String, predicate: Predicates = .BEGINSWITH, sortDescriptors: [SortDescriptor<Singer>]) {
         _fetchRequest = FetchRequest<Singer>(
-            sortDescriptors: [],
-            predicate: NSPredicate(format: "lastName BEGINSWITH %@", filter)
+            sortDescriptors: sortDescriptors,
+            predicate: NSPredicate(format: "lastName \(predicate) %@", filter)
         )
     }
 }

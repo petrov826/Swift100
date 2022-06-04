@@ -50,6 +50,15 @@ struct ContentView: View {
                 
                 try? moc.save()
             }
+            
+            FilteredList(
+                filter: "J",
+                predicate: .BEGINSWITH,
+                sortDescriptors: [
+                    SortDescriptor(\.firstName),
+                    SortDescriptor(\.lastName)
+                ]
+            )
         }
     }
 }
