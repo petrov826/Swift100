@@ -9,6 +9,8 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var users = [User]()
+    @Environment(\.managedObjectContext) var moc
+    @FetchRequest(sortDescriptors: []) var fetchedUsers: FetchedResults<CachedUser>
     
     var body: some View {
         NavigationView {
@@ -46,6 +48,24 @@ struct ContentView: View {
             decoder.dateDecodingStrategy = .iso8601
             if let decodedData = try? decoder.decode([User].self, from: data) {
                 users = decodedData
+                
+                for user in users {
+                    let cachedUser = CachedUser(context: moc)
+                    cachedUser.id = user.id
+                    cachedUser.isActive = user.isActive
+                    cachedUser.name = user.name
+                    cachedUser.age = Int16(user.age)
+                    cachedUser.company = user.company
+                    cachedUser.email = user.email
+                    cachedUser.address = user.address
+                    cachedUser.about = user.about
+                    cachedUser.registered = user.registered
+                    cachedUser.tags = user.tags.joined(separator: ",")
+                }
+                
+                if moc.hasChanges {
+                    try? moc.save()
+                }
             }
         } catch {
             print("Invalid JSON")
