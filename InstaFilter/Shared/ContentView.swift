@@ -8,17 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var blurAmount = 0.0 {
-        didSet {
-            // when we change the value with Button,
-            // it will be printed.
-            // but when using Slider, nothing will be printed.
-            // that's because value change via binding
-            // doesn't trigger property observer
-            // So, how should we achieve that?
-            print("New value is \(blurAmount)")
-        }
-    }
+    @State private var blurAmount = 0.0
     
     var body: some View {
         VStack {
@@ -30,6 +20,9 @@ struct ContentView: View {
             Button("Random Blur") {
                 blurAmount = Double.random(in: 0...20)
             }
+        }
+        .onChange(of: blurAmount) { newValue in
+            print("New value is \(newValue)")
         }
     }
 }
