@@ -12,6 +12,7 @@ import SwiftUI
 struct ContentView: View {
     @State private var image: Image?
     @State private var filterIntensity = 0.5
+    @State private var filterRadius = 100.0
     
     @State private var showingImagePicker = false
     @State private var inputImage: UIImage?
@@ -41,10 +42,19 @@ struct ContentView: View {
                     showingImagePicker = true
                 }
                 
-                HStack {
+                VStack {
                     Text("Intensity")
                     Slider(value: $filterIntensity)
-                        .onChange(of: filterIntensity) { _ in applyProcessing() }
+                        .onChange(of: filterIntensity) { _ in applyProcessing()
+                        }
+                        .disabled(!currentFileter.inputKeys.contains(kCIInputIntensityKey))
+                    
+                    Text("Radius")
+                    Slider(value: $filterRadius, in: 0...200)
+                        .onChange(of: filterRadius) { _ in
+                            applyProcessing()
+                        }
+                        .disabled(!currentFileter.inputKeys.contains(kCIInputRadiusKey))
                 }
                 .padding(.vertical)
                 
@@ -56,6 +66,7 @@ struct ContentView: View {
                     Spacer()
                     
                     Button("Save", action: save)
+                        .disabled(processedImage == nil)
                 }
             }
             .padding([.horizontal, .bottom])
@@ -68,15 +79,24 @@ struct ContentView: View {
                 ImagePicker(image: $inputImage)
             }
             .confirmationDialog("Select a filter", isPresented: $showingFilterSheet) {
-                Button("Crystallize") { setFilter(CIFilter.crystallize()) }
-                Button("Edges") { setFilter(CIFilter.edges()) }
-                Button("Gaussian Blur") { setFilter(CIFilter.gaussianBlur()) }
-                Button("Pixellate") { setFilter(CIFilter.pixellate()) }
-                Button("Sepia Tone") { setFilter(CIFilter.sepiaTone()) }
-                Button("Unsharp Mask") { setFilter(CIFilter.unsharpMask()) }
-                Button("Vignette") { setFilter(CIFilter.vignette()) }
+                Group {
+                    Button("Crystallize") { setFilter(CIFilter.crystallize()) }
+                    Button("Edges") { setFilter(CIFilter.edges()) }
+                    Button("Gaussian Blur") { setFilter(CIFilter.gaussianBlur()) }
+                    Button("Pixellate") { setFilter(CIFilter.pixellate()) }
+                    Button("Sepia Tone") { setFilter(CIFilter.sepiaTone()) }
+                    Button("Unsharp Mask") { setFilter(CIFilter.unsharpMask()) }
+                }
                 
-                Button("Cancel", role: .cancel) { }
+                Group {
+                
+                    Button("Vignette") { setFilter(CIFilter.vignette()) }
+                    Button("Circle Splash Distortion") { setFilter(CIFilter.circleSplashDistortion()) }
+                    Button("Affine Clamp") { setFilter(CIFilter.affineClamp()) }
+                    Button("X Ray") { setFilter(CIFilter.xRay()) }
+                    
+                    Button("Cancel", role: .cancel) { }
+                }
             }
         }
     }
@@ -111,7 +131,7 @@ struct ContentView: View {
             currentFileter.setValue(filterIntensity, forKey: kCIInputIntensityKey)
         }
         if inputKeys.contains(kCIInputRadiusKey) {
-            currentFileter.setValue(filterIntensity * 200, forKey: kCIInputRadiusKey)
+            currentFileter.setValue(filterRadius, forKey: kCIInputRadiusKey)
         }
         if inputKeys.contains(kCIInputScaleKey) {
             currentFileter.setValue(filterIntensity * 10, forKey: kCIInputScaleKey)
