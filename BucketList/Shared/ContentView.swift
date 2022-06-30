@@ -7,47 +7,30 @@
 
 import SwiftUI
 
-struct User: Identifiable, Comparable {
-    let id = UUID()
-    let firstName: String
-    let lastName: String
-    
-    // operator overloading
-    // static keywords means
-    // "< operator belongs to struct itself"
-    // lhs: left hand side
-    // rhs: right hand side
-    static func <(lhs: User, rhs: User) -> Bool {
-        lhs.firstName < rhs.firstName
-    }
-
-}
-
 struct ContentView: View {
-    // get sorted array
-    let values = [1, 5, 3, 6, 2, 9].sorted()
-    
-    let users = [
-        User(firstName: "Sara", lastName: "Lind"),
-        User(firstName: "Tim", lastName: "Jackson"),
-        User(firstName: "Harry", lastName: "Potter")
-    ].sorted()
-    // when we want to sort users,
-    // .sorted { $0.firstName < $1.firstName } will work.
-    // However, it's better to separate layout and data.
-    // In other word, data should know how to sort.
-    // Let's put the sorting rule inside of User struct.
-    
     var body: some View {
-        VStack {
-            List(values, id: \.self) {
-                Text("\($0)")
+        Text("Hello")
+            .onTapGesture {
+                let message = "Test Message"
+                let url = getDocumentDirectory().appendingPathComponent("message.txt")
+                
+                do {
+                    // try to write to the URL
+                    try message.write(to: url, atomically: true, encoding: .utf8)
+                    
+                    // try to read it back
+                    let input = try String(contentsOf: url)
+                    print(input)
+                } catch {
+                    print(error.localizedDescription)
+                }
             }
-            
-            List(users) { user in
-                Text("\(user.firstName) \(user.lastName)")
-            }
-        }
+    }
+    
+    /// get available Document URLs and return the 1st one
+    func getDocumentDirectory() -> URL {
+        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        return paths[0]
     }
 }
 
