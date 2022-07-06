@@ -6,39 +6,72 @@
 //
 import LocalAuthentication
 import SwiftUI
+import MapKit
 
 struct ContentView: View {
-    @State private var isLocked = true
+    @State private var mapRegion = MKCoordinateRegion(
+        center: CLLocationCoordinate2D(latitude: 50, longitude: 0),
+        span: MKCoordinateSpan(latitudeDelta: 25, longitudeDelta: 25)
+    )
+    @State private var locations = [Location]()
+    @State private var selectedPlace: Location?
     
     var body: some View {
-        VStack {
-            if isLocked {
-                Text("Locked")
-            } else {
-                Text("Unlocked")
-            }
-        }
-        .onAppear(perform: authenticate)
-    }
-    
-    func authenticate() {
-        let context = LAContext()
-        var error: NSError?
-        
-        if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
-            let reason = "We need to unlock your data"
-            
-            context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: reason) { success, authenticationError in
-                if success {
-                    isLocked = false
-                } else {
-                    
+        ZStack {
+            Map(coordinateRegion: $mapRegion, annotationItems: locations) { location in
+                MapAnnotation(coordinate: location.coordinate) {
+                    VStack {
+                        Image(systemName: "star.circle")
+                            .resizable()
+                            .foregroundColor(.orange)
+                            .frame(width: 44, height: 44)
+                            .background(.white)
+                            .clipShape(Circle())
+                        Text(location.name)
+                            .fixedSize()
+                    }
+                    .onTapGesture {
+                        selectedPlace = location
+                    }
                 }
             }
-        } else {
-            // no biometrics
+            .ignoresSafeArea()
+            
+            Circle()
+                .fill(.blue)
+                .opacity(0.3)
+                .frame(width: 32, height: 32)
+            
+            VStack {
+                Spacer()
+                HStack {
+                    Spacer()
+                    Button {
+                        let newLocation = Location(id: UUID(), name: "New location", description: "", latitude: mapRegion.center.latitude, longitude: mapRegion.center.longitude)
+                        locations.append(newLocation)
+                    } label: {
+                        Image(systemName: "plus")
+                    }
+                    .padding()
+                    .background(.black.opacity(0.75))
+                    .foregroundColor(.white)
+                    .font(.title)
+                    .clipShape(Circle())
+                    .padding(.trailing)
+                }
+            }
+        }
+        // new syntax of .sheet modifier
+        // when user dismissed the sheet, selectedPlace will be set back to nil
+        .sheet(item: $selectedPlace) { place in // place will be unwrapped by Swift
+            EditView(location: place) { newLocation in
+                if let index = locations.firstIndex(of: place) {
+                    locations[index] = newLocation
+                }
+            }
         }
     }
+    
 }
 
 struct ContentView_Previews: PreviewProvider {
