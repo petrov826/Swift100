@@ -39,7 +39,7 @@ struct EditView: View {
                             Text(page.title)
                                 .font(.headline)
                             + Text(": ")
-                            + Text("Page description here")
+                            + Text(page.description)
                                 .italic()
                         }
                     case .failed:
@@ -89,7 +89,7 @@ struct EditView: View {
             // the type of .pages is [Int: Page]
             // we can get values by .values
             // keys aren't important for this app
-            pages = items.query.pages.values.sorted { $0.title < $1.title }
+            pages = items.query.pages.values.sorted()
             loadingState = .loaded
         } catch {
             loadingState = .failed
