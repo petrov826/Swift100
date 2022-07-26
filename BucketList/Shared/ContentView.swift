@@ -12,6 +12,7 @@ struct ContentView: View {
     @StateObject private var viewModel = ViewModel()
     
     var body: some View {
+        // unlocked
         if !viewModel.isLocked {
             ZStack {
                 Map(coordinateRegion: $viewModel.mapRegion, annotationItems: viewModel.locations) { location in
@@ -46,13 +47,13 @@ struct ContentView: View {
                             viewModel.addLocation()
                         } label: {
                             Image(systemName: "plus")
+                                .padding()
+                                .background(.black.opacity(0.75))
+                                .foregroundColor(.white)
+                                .font(.title)
+                                .clipShape(Circle())
+                                .padding(.trailing)
                         }
-                        .padding()
-                        .background(.black.opacity(0.75))
-                        .foregroundColor(.white)
-                        .font(.title)
-                        .clipShape(Circle())
-                        .padding(.trailing)
                     }
                 }
             }
@@ -63,14 +64,23 @@ struct ContentView: View {
                     viewModel.update(location: newLocation)
                 }
             }
+            
+        // locked
         } else {
             Button("Unlock") {
+                viewModel.showingFaceIDAlert = false
                 viewModel.authenticate()
             }
             .padding()
             .background(.blue)
             .foregroundColor(.white)
             .clipShape(Capsule())
+            // when authentication failed, show alert
+            .alert(viewModel.faceIDAlertMessage, isPresented: $viewModel.showingFaceIDAlert) {
+                Button("Try again") {
+                    viewModel.authenticate()
+                }
+            }
         }
     }
     

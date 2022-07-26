@@ -23,6 +23,8 @@ extension ContentView {
         @Published private(set) var locations: [Location]
         @Published var selectedPlace: Location?
         @Published var isLocked = true
+        @Published var showingFaceIDAlert = false
+        @Published var faceIDAlertMessage = ""
         
         let savePath = FileManager.documentDirectory.appendingPathComponent("SavePlaces")
         
@@ -83,11 +85,29 @@ extension ContentView {
                             }
                         }
                     } else {
-                        // error
+                        Task { @MainActor in
+                            // show alert and error message in View
+                            // (this is a ViewModel)
+                            self.showingFaceIDAlert = true
+                            if let authenticationError = authenticationError {
+                                self.faceIDAlertMessage = self.getAuthenticationErrorMessage(errorCode: authenticationError._code)
+                            }
+                        }
                     }
                 }
             } else {
                 // no biometrics
+            }
+        }
+        
+        func getAuthenticationErrorMessage(errorCode: Int) -> String {
+            switch errorCode {
+            case LAError.appCancel.rawValue:
+                return "You canceled."
+            case LAError.authenticationFailed.rawValue:
+                return "FaceID auth failed."
+            default:
+                return "Something went wrong."
             }
         }
     }
