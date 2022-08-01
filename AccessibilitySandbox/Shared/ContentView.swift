@@ -8,27 +8,36 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var value = 100
+    
     var body: some View {
-        VStack {
-            // BYW, who is this girl?
-            Image(decorative: "character")
-                .resizable()
-                .scaledToFit()
-                .accessibilityHidden(true)
+        VStack(spacing: 20) {
+            Text("Value: \(value)")
             
-            // these Text are not 1 View.
-            // but they should be combined for better accessibility
-            Text("Your score is")
-            Text("1000")
-                .font(.title)
+            // it doesn't talk about current `score`
+            // when this button tapped, voiceover says "Increment"
+            Button("Increment") {
+                value += 1
+            }
+            
+            Button("Decrement") {
+                value -= 1
+            }
+            .accessibilityElement()
+            .accessibilityLabel("Value")
+            .accessibilityValue(String(value))
+            .accessibilityAdjustableAction { direction in
+                switch direction {
+                case .increment:
+                    value += 1
+                case .decrement:
+                    value -= 1
+                default:
+                    print("Not handled")
+                }
+            }
+            
         }
-        // option 1
-        // there will be a small pause when voiceover reads them
-        .accessibilityElement(children: .combine)
-        // option 2
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Your score is 1000")
-        
     }
 }
 
