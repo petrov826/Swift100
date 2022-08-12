@@ -6,29 +6,40 @@
 //
 
 import SwiftUI
+import UserNotifications
 
 struct ContentView: View {
     var body: some View {
-        List {
-            Text("Milk")
-                // NOTE: swipreActions are hidden by default
-                // we need to think carefully it is right time to use.
-                .swipeActions {
-                    Button(role: .destructive) {
-                        print("Deleting this item")
-                    } label: {
-                        Label("delete", systemImage: "trash")
+        VStack {
+            Button("Request Permission") {
+                UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { succuess, error in
+                    if succuess {
+                        print("All set!")
+                    // else + if let unwrapping
+                    // we can say simply else here
+                    // and unwrap `error` inside else
+                    } else if let error = error {
+                        print("error: \(error.localizedDescription)")
                     }
-                    // .tint(.red) // this works fine too
                 }
-                .swipeActions(edge: .leading) {
-                    Button {
-                        print("Pinning this item")
-                    } label: {
-                        Label("pin", systemImage: "pin")
-                    }
-                    .tint(.orange)
-                }
+            }
+            
+            Button("Schedule Notification") {
+                // what to show
+                let content = UNMutableNotificationContent()
+                content.title = "Feed the dogs"
+                content.subtitle = "They look hungry"
+                content.sound = .default
+                
+                // when to show
+                let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
+                
+                // create request from content and trigger
+                // UUID().uuidString returns a random string
+                let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+                
+                UNUserNotificationCenter.current().add(request)
+            }
         }
     }
 }
