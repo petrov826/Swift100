@@ -8,28 +8,26 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var backgroundColor = Color.white
-    
     var body: some View {
-        VStack {
-            Image("example")
-                .interpolation(.none) // remove blur
-                .resizable()
-                .scaledToFit()
-                .frame(maxHeight: .infinity)
-                .background(backgroundColor)
-                .ignoresSafeArea()
-            
-            Text("Change background color")
-                .padding()
-                // contextMenu pops up when it got long-tapped
-                // (it is hidden by default)
-                // we have to think "Is this a best option for user?"
-                // he/she may not realize the functionality
-                .contextMenu {
-                    Button("Red") { backgroundColor = .red }
-                    Button("Yellow") { backgroundColor = .yellow }
-                    Button("Blue") { backgroundColor = .blue }
+        List {
+            Text("Milk")
+                // NOTE: swipreActions are hidden by default
+                // we need to think carefully it is right time to use.
+                .swipeActions {
+                    Button(role: .destructive) {
+                        print("Deleting this item")
+                    } label: {
+                        Label("delete", systemImage: "trash")
+                    }
+                    // .tint(.red) // this works fine too
+                }
+                .swipeActions(edge: .leading) {
+                    Button {
+                        print("Pinning this item")
+                    } label: {
+                        Label("pin", systemImage: "pin")
+                    }
+                    .tint(.orange)
                 }
         }
     }
