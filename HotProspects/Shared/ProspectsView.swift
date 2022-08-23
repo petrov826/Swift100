@@ -28,6 +28,29 @@ struct ProspectsView: View {
                         Text(prospect.emailAddress)
                             .foregroundColor(.secondary)
                     }
+                    .swipeActions {
+                        if prospect.isContacted {
+                            Button {
+                                // actually, this code doesn't work
+                                // we need to change Prospect class
+                                // prospect.isContacted.toggle()
+                                
+                                // use this instead
+                                prospects.toggleIsContacted(prospect)
+                            } label: {
+                                Label("Mark Uncontacted", systemImage: "person.crop.circle.badge.xmark")
+                            }
+                            .tint(.yellow)
+                        } else {
+                            Button {
+                                // prospect.isContacted.toggle()
+                                prospects.toggleIsContacted(prospect)
+                            } label: {
+                                Label("Mark Contacted", systemImage: "person.crop.circle.fill.badge.checkmark")
+                            }
+                            .tint(.blue)
+                        }
+                    }
                 }
             }
             .navigationTitle(title)
