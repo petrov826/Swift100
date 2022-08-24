@@ -11,6 +11,7 @@ import SwiftUI
 struct MeView: View {
     @State private var name = "Anonimous"
     @State private var emailAddress = "you@yoursite.com"
+    @State private var qrCode = UIImage()
     
     let context = CIContext()
     let filter = CIFilter.qrCodeGenerator()
@@ -33,15 +34,31 @@ struct MeView: View {
                 
                 // UIImage(generated QR Code) -> Image
                 Section("QR Code") {
-                    Image(uiImage: generateQRCode(from: "\(name)\n\(emailAddress)"))
+                    Image(uiImage: qrCode)
                         .resizable() // QR Code will big but blurry
                         .interpolation(.none) // this comes to rescue
                         .scaledToFit()
                         .frame(width: 200, height: 200)
+                        .contextMenu {
+                            Button {
+                                // save code to photos
+                                // let uiImage = generateQRCode(from: "\(name)\n\(emailAddress)")
+                                let imageSaver = ImageSaver()
+                                imageSaver.writeToPhotoAlbum(image: qrCode)
+                            } label: {
+                                Label("Save to Photos", systemImage: "square.and.arrow.down") // 􀈄
+                            }
+                        }
                 }
             }
             .navigationTitle("Your code")
+            .onAppear { updateCode() }
+            .onChange(of: [name, emailAddress]) { _ in updateCode() }
         }
+    }
+    
+    func updateCode() {
+        qrCode = generateQRCode(from: "\(name)\n\(emailAddress)")
     }
     
     func generateQRCode(from string: String) -> UIImage {

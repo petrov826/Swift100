@@ -16,7 +16,7 @@ struct ContentView: View {
                 .tabItem {
                     Label("Everyone", systemImage: "person.3")
                 }
-            
+
             ProspectsView(filter: .contacted)
                 .tabItem {
                     Label("Contacted", systemImage: "checkmark.circle")
