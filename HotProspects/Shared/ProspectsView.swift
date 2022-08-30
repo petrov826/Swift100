@@ -7,6 +7,7 @@
 
 import CodeScanner // package from https://github.com/twostraws/CodeScanner
 import SwiftUI
+import UserNotifications
 
 struct ProspectsView: View {
     enum FilterType {
@@ -40,7 +41,7 @@ struct ProspectsView: View {
                             } label: {
                                 Label("Mark Uncontacted", systemImage: "person.crop.circle.badge.xmark")
                             }
-                            .tint(.yellow)
+                            .tint(.blue)
                         } else {
                             Button {
                                 // prospect.isContacted.toggle()
@@ -48,7 +49,14 @@ struct ProspectsView: View {
                             } label: {
                                 Label("Mark Contacted", systemImage: "person.crop.circle.fill.badge.checkmark")
                             }
-                            .tint(.blue)
+                            .tint(.green)
+                            
+                            Button {
+                                addNotification(for: prospect)
+                            } label: {
+                                Label("Remind me", systemImage: "bell")
+                            }
+                            .tint(.orange)
                         }
                     }
                 }
@@ -105,6 +113,48 @@ struct ProspectsView: View {
             prospects.add(person)
         case .failure(let error):
             print("Scanning failed: \(error.localizedDescription)")
+        }
+    }
+    
+    func addNotification(for prospect: Prospect) {
+        let center = UNUserNotificationCenter.current()
+        
+        let addRequest = {
+            let content = UNMutableNotificationContent()
+            content.title = "Contact \(prospect.name)"
+            content.subtitle = prospect.emailAddress
+            content.sound = UNNotificationSound.default
+            
+            var dateComponents = DateComponents()
+            // 9 AM on any day
+            dateComponents.hour = 9
+            
+            // trigger notification on 9AM of tomorrow
+            // let trigger = UNCalendarNotificationTrigger.init(dateMatching: dateComponents, repeats: false)
+            // debug
+            // trigger notification after 5 seconds from now
+            let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
+            
+            let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+            
+            center.add(request)
+        }
+        
+        // check current setting
+        center.getNotificationSettings { settings in
+            // if already authorized
+            if settings.authorizationStatus == .authorized {
+                addRequest()
+            } else {
+                // if not, request authorization
+                center.requestAuthorization(options: [.alert, .badge, .sound]) { success, error in
+                    if success {
+                        addRequest()
+                    } else {
+                        print("User didn't accept auth request.")
+                    }
+                }
+            }
         }
     }
 }
