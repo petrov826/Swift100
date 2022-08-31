@@ -8,27 +8,24 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var currentZoomAmount = 0.0
-    @State private var finalZoomAmount = 1.0
+    // hold current gesture' angle
+    @State private var currentAngle = Angle.zero
+    // after gesture ended
+    @State private var finalAngle = Angle.zero
     
     var body: some View {
-        VStack(spacing: 20) {
-            Text("Hello, world!")
-                .scaleEffect(currentZoomAmount + finalZoomAmount)
-            Text("currentZoomAmount: \(currentZoomAmount)")
-            Text("finalZoomAmount: \(finalZoomAmount)")
-        }
-        .gesture(
-            MagnificationGesture()
-                .onChanged { amount in
-                    print(amount)
-                    currentZoomAmount = amount - 1
-                }
-                .onEnded { amount in
-                    finalZoomAmount += currentZoomAmount
-                    currentZoomAmount = 0.0
-                }
-        )
+        Text("Hello, world!")
+            .rotationEffect(currentAngle + finalAngle)
+            .gesture(
+                RotationGesture()
+                    .onChanged { angle in
+                        currentAngle = angle
+                    }
+                    .onEnded { angle in
+                        finalAngle += currentAngle
+                        currentAngle = .zero
+                    }
+            )
     }
 }
 
