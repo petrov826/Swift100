@@ -8,24 +8,37 @@
 import SwiftUI
 
 struct ContentView: View {
-    // hold current gesture' angle
-    @State private var currentAngle = Angle.zero
-    // after gesture ended
-    @State private var finalAngle = Angle.zero
+    @State private var offset = CGSize.zero
+    @State private var isDragging = false
     
     var body: some View {
-        Text("Hello, world!")
-            .rotationEffect(currentAngle + finalAngle)
-            .gesture(
-                RotationGesture()
-                    .onChanged { angle in
-                        currentAngle = angle
-                    }
-                    .onEnded { angle in
-                        finalAngle += currentAngle
-                        currentAngle = .zero
-                    }
-            )
+        let dragGesture = DragGesture()
+            .onChanged { value in
+                offset = value.translation
+            }
+            .onEnded { _ in
+                offset = .zero
+                isDragging = false
+            }
+        
+        let longPressGesture = LongPressGesture()
+            .onEnded { _ in
+                withAnimation {
+                    isDragging = true
+                }
+            }
+        
+        // longPressGesture -> dragGesture
+        // this will save us from misoperation(drag)
+        let combinedGesture =
+            longPressGesture.sequenced(before: dragGesture)
+        
+        Circle()
+            .fill(.red)
+            .frame(width: 64, height: 64)
+            .scaleEffect(isDragging ? 1.25 : 1.0)
+            .offset(offset)
+            .gesture(combinedGesture)
     }
 }
 
