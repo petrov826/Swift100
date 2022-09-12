@@ -10,23 +10,16 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        ZStack {
-            Rectangle()
-                .fill(.blue)
-                .frame(width: 300, height: 300)
-                .onTapGesture {
-                    print("Rectangle tapped")
-                }
-            Circle()
-                .fill(.red)
-                .frame(width: 300, height: 300)
-                .contentShape(Rectangle())
-                .onTapGesture {
-                    print("Circle tapped")
-                }
-                // even if onTapGesture attached,
-                // Circle will refuse to respond
-                // .allowsHitTesting(false)
+        VStack {
+            Text("Hello")
+            // Spacer doesn't respond tapping
+            Spacer()
+                .frame(height: 100)
+            Text("World")
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            print("VStack tapped")
         }
     }
 }
