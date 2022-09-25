@@ -10,7 +10,7 @@ import SwiftUI
 extension View {
     func stacked(at position: Int, in total: Int) -> some View {
         let offset = Double(total - position)
-        return self.offset(y: offset * 10)
+        return self.offset(x: 0, y: offset * 10)
     }
 }
 
@@ -18,7 +18,7 @@ struct ContentView: View {
     @Environment(\.accessibilityDifferentiateWithoutColor) var differentiateWithoutColor
     @State private var cards = Array<Card>(repeating: Card.example, count: 10)
     
-    @State private var remainingTime = 100
+    @State private var timeRemaining = 100
     // this timer doesn't stop even if the app is in background
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
@@ -32,13 +32,14 @@ struct ContentView: View {
                 .ignoresSafeArea()
             
             VStack {
-                Text("Time: \(remainingTime)")
+                Text("Time: \(timeRemaining)")
                     .font(.largeTitle)
                     .foregroundColor(.white)
                     .padding(.horizontal, 20)
                     .padding(.vertical, 5)
                     .background(.black.opacity(0.7))
                     .clipShape(Capsule())
+                
                 ZStack {
                     ForEach(0..<cards.count, id: \.self) { index in
                         CardView(card: cards[index]) {
@@ -48,6 +49,16 @@ struct ContentView: View {
                         }
                         .stacked(at: index, in: cards.count)
                     }
+                }
+                .allowsHitTesting(timeRemaining > 0)
+                
+                if cards.isEmpty {
+                    Button("Start Again", action: resetCards)
+                        .padding()
+                        .background(.white)
+                        .foregroundColor(.black)
+                        .clipShape(Capsule())
+                        .padding()
                 }
             }
             
@@ -76,13 +87,17 @@ struct ContentView: View {
         .onReceive(timer) { time in
             guard isActive else { return }
             
-            if remainingTime > 0 {
-                remainingTime -= 1
+            if timeRemaining > 0 {
+                timeRemaining -= 1
             }
         }
         .onChange(of: scenePhase) { newPhase in
             if newPhase == .active {
-                isActive = true
+                // if app is running and some cards are left
+                // keep the timer running
+                if !cards.isEmpty {
+                    isActive = true
+                }
             } else {
                 isActive = false
             }
@@ -91,6 +106,16 @@ struct ContentView: View {
     
     func removeCard(at index: Int) {
         cards.remove(at: index)
+        
+        if cards.isEmpty {
+            isActive = false
+        }
+    }
+    
+    func resetCards() {
+        cards = Array<Card>(repeating: Card.example, count: 10)
+        timeRemaining = 100
+        isActive = true
     }
 }
 
