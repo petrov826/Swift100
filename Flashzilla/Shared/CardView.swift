@@ -11,6 +11,8 @@ struct CardView: View {
     let card: Card
     var removal: (() -> Void)? = nil
     
+    @State private var feedback = UINotificationFeedbackGenerator()
+    
     @Environment(\.accessibilityDifferentiateWithoutColor) var differentiateWithoutColor
     @State private var showingAnswer = false
     @State private var offset = CGSize.zero
@@ -52,10 +54,19 @@ struct CardView: View {
             DragGesture()
                 .onChanged { gesture in
                     offset = gesture.translation
+                    // prepare before dragging ends
+                    feedback.prepare()
                 }
                 .onEnded { _ in
                     // user will drag the card left or right
                     if abs(offset.width) > 100 {
+                        if offset.width > 0 {
+                            // this can be very annoying.
+                            // Let's comment out for now.
+                            // feedback.notificationOccurred(.success)
+                        } else {
+                            feedback.notificationOccurred(.error)
+                        }
                         // attempt to call removal()
                         // if not set, just skip it
                         removal?()
