@@ -14,23 +14,21 @@ struct ContentView: View {
     ]
     
     var body: some View {
-        GeometryReader { fullViewGeo in
-            ScrollView {
-                ForEach(0..<50) { index in
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 0) {
+                ForEach(1..<20) { num in
                     GeometryReader { geo in
-                        Text("Row #\(index)")
-                            .font(.title)
-                            .frame(maxWidth: .infinity)
-                            .background(colors[index % colors.count])
+                        Text("No. \(num)")
+                            .font(.largeTitle)
+                            .padding()
+                            .background(.red)
                             .rotation3DEffect(
-                                // min(top) Y of Text view in global space
-                                // bigger minY, more rotation
-                                // fullViewGeo.size.height / 2 = half height of the screen
-                                .degrees(geo.frame(in: .global).minY - fullViewGeo.size.height / 2) / 8,
+                                .degrees(-geo.frame(in: .global).minX) / 8,
                                 axis: (x: 0, y: 1, z: 0)
                             )
+                            .frame(width: 200, height: 200)
                     }
-                    .frame(height: 40)
+                    .frame(width: 200, height: 200)
                 }
             }
         }
