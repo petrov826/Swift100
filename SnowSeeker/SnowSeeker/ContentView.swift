@@ -7,24 +7,37 @@
 
 import SwiftUI
 
-struct User: Identifiable {
-    var id = "Taylor Swift"
+struct UserView: View {
+    var body: some View {
+        // Group doesn't contain layout inforamtion
+        Group {
+            Text("Name: Paul")
+            Text("Country: England")
+            Text("Pets: Luna and Arya")
+        }
+        .background(.green.opacity(0.2))
+        .font(.title)
+    }
 }
 
 struct ContentView: View {
-    @State private var selectedUser: User? = nil
-    @State private var showingUser = false
+    @State private var layoutVertically = false
     
     var body: some View {
-        Text("Hello world")
-            .onTapGesture {
-                selectedUser = User()
-                showingUser = true
+        Group {
+            if layoutVertically {
+                VStack {
+                    UserView()
+                }
+            } else {
+                HStack {
+                    UserView()
+                }
             }
-            // if selectedUser is not nil, show the sheet
-            .alert("Welcome", isPresented: $showingUser, presenting: selectedUser) { user in
-                Button("OK") { }
-            }
+        }
+        .onTapGesture {
+            layoutVertically.toggle()
+        }
     }
 }
 
