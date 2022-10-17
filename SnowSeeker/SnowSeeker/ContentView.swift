@@ -21,22 +21,20 @@ struct UserView: View {
 }
 
 struct ContentView: View {
-    @State private var layoutVertically = false
+    @Environment(\.horizontalSizeClass) var horizotalSizeClass
     
     var body: some View {
-        Group {
-            if layoutVertically {
-                VStack {
-                    UserView()
-                }
-            } else {
-                HStack {
-                    UserView()
-                }
+        // if screen width is not wide enough,
+        // stack vertically
+        if horizotalSizeClass == .compact {
+            VStack {
+                UserView()
             }
-        }
-        .onTapGesture {
-            layoutVertically.toggle()
+        // for iPhone13 Pro Max and iPad
+        } else {
+            HStack {
+                UserView()
+            }
         }
     }
 }
