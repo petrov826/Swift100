@@ -13,16 +13,17 @@ struct User: Identifiable {
 
 struct ContentView: View {
     @State private var selectedUser: User? = nil
+    @State private var showingUser = false
+    
     var body: some View {
         Text("Hello world")
             .onTapGesture {
                 selectedUser = User()
+                showingUser = true
             }
             // if selectedUser is not nil, show the sheet
-            .sheet(item: $selectedUser) { user in
-                // the type of `user` is User not User?
-                // no unwrapping needed
-                Text(user.id)
+            .alert("Welcome", isPresented: $showingUser, presenting: selectedUser) { user in
+                Button("OK") { }
             }
     }
 }
