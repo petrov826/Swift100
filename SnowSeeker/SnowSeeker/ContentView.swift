@@ -12,6 +12,7 @@ struct ContentView: View {
     
     var body: some View {
         NavigationView {
+            // primary view
             List(resorts) { resort in
                 NavigationLink {
                     Text(resort.name)
@@ -38,6 +39,13 @@ struct ContentView: View {
                 }
             }
             .navigationTitle("Ski Resorts")
+            
+            // secondary view
+            // if the screen is big and it's landscape mode,
+            // blank screen will be displayed.
+            // let's display a static view
+            // to show user how to use this app
+            WelcomeView()
         }
     }
 }
