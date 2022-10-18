@@ -8,31 +8,36 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var searchText = ""
-    let allNames = ["Tom", "Jack", "Sam", "Mary"]
+    let resorts: [Resort] = Bundle.main.decode("resorts.json")
     
     var body: some View {
         NavigationView {
-            List(filteredName, id: \.self) { name in
-                Text(name)
+            List(resorts) { resort in
+                NavigationLink {
+                    Text(resort.name)
+                } label: {
+                    Image(resort.country)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 40, height: 25)
+                        .clipShape(RoundedRectangle(cornerRadius: 5))
+                        // black edge around the flag
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 5)
+                                .stroke(
+                                    .black.opacity(0.5),
+                                    lineWidth: 1
+                                )
+                        }
+                    VStack(alignment: .leading) {
+                        Text(resort.name)
+                            .font(.headline)
+                        Text("\(resort.runs) runs")
+                            .foregroundColor(.secondary)
+                    }
+                }
             }
-            // when searchText changed,
-            // body will be reinvoked
-            .searchable(
-                text: $searchText,
-                prompt: "Look for something"
-            )
-            .navigationTitle("Searching")
-        }
-    }
-    
-    var filteredName: [String] {
-        if searchText.isEmpty {
-            return allNames
-        } else {
-            return allNames.filter {
-                $0.localizedCaseInsensitiveContains(searchText)
-            }
+            .navigationTitle("Ski Resorts")
         }
     }
 }
