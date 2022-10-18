@@ -7,33 +7,31 @@
 
 import SwiftUI
 
-struct UserView: View {
-    var body: some View {
-        // Group doesn't contain layout inforamtion
-        Group {
-            Text("Name: Paul")
-            Text("Country: England")
-            Text("Pets: Luna and Arya")
-        }
-        .background(.green.opacity(0.2))
-        .font(.title)
-    }
-}
-
 struct ContentView: View {
-    @Environment(\.horizontalSizeClass) var horizotalSizeClass
+    @State private var searchText = ""
+    let allNames = ["Tom", "Jack", "Sam", "Mary"]
     
     var body: some View {
-        // if screen width is not wide enough,
-        // stack vertically
-        if horizotalSizeClass == .compact {
-            VStack {
-                UserView()
+        NavigationView {
+            List(filteredName, id: \.self) { name in
+                Text(name)
             }
-        // for iPhone13 Pro Max and iPad
+            // when searchText changed,
+            // body will be reinvoked
+            .searchable(
+                text: $searchText,
+                prompt: "Look for something"
+            )
+            .navigationTitle("Searching")
+        }
+    }
+    
+    var filteredName: [String] {
+        if searchText.isEmpty {
+            return allNames
         } else {
-            HStack {
-                UserView()
+            return allNames.filter {
+                $0.localizedCaseInsensitiveContains(searchText)
             }
         }
     }
