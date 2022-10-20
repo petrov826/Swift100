@@ -7,6 +7,19 @@
 
 import SwiftUI
 
+extension View {
+    @ViewBuilder func phoneOnlyNavigationView() -> some View {
+        // .phone, .pad, .mac, .tv and .carplay are avaiable
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            // the type of self is View
+            // .stack only shows a single top view at a time
+            self.navigationViewStyle(.stack)
+        } else {
+            self
+        }
+    }
+}
+
 struct ContentView: View {
     let resorts: [Resort] = Bundle.main.decode("resorts.json")
     
@@ -43,10 +56,11 @@ struct ContentView: View {
             // secondary view
             // if the screen is big and it's landscape mode,
             // blank screen will be displayed.
-            // let's display a static view
+            // So let's display a static view
             // to show user how to use this app
             WelcomeView()
         }
+        .phoneOnlyNavigationView()
     }
 }
 
