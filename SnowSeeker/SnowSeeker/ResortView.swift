@@ -9,6 +9,8 @@ import SwiftUI
 
 struct ResortView: View {
     let resort: Resort
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    @Environment(\.dynamicTypeSize) var typeSize
     
     var body: some View {
         ScrollView {
@@ -18,11 +20,25 @@ struct ResortView: View {
                     .scaledToFit()
                 
                 HStack {
-                    SkiDetailsView(resort: resort)
-                    ResortDetailsView(resort: resort)
+                    // if the type size is so large,
+                    // horizontally stacked 4 Views will be too tight
+                    if horizontalSizeClass == .compact && typeSize > .large {
+                        VStack(spacing: 10) {
+                            SkiDetailsView(resort: resort)
+                        }
+                        VStack(spacing: 10) {
+                            ResortDetailsView(resort: resort)
+                        }
+                    } else {
+                        SkiDetailsView(resort: resort)
+                        ResortDetailsView(resort: resort)
+                    }
+                    
                 }
                 .padding(.vertical)
                 .background(Color.primary.opacity(0.1))
+                // set upper bound for dynamic type size
+                .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
                 
                 Group {
                     Text(resort.description)
