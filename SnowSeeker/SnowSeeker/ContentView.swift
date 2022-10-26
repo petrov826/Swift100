@@ -22,11 +22,12 @@ extension View {
 
 struct ContentView: View {
     let resorts: [Resort] = Bundle.main.decode("resorts.json")
+    @State private var searchText = ""
     
     var body: some View {
         NavigationView {
             // primary view
-            List(resorts) { resort in
+            List(filteredResorts) { resort in
                 NavigationLink {
                     ResortView(resort: resort)
                 } label: {
@@ -52,6 +53,8 @@ struct ContentView: View {
                 }
             }
             .navigationTitle("Ski Resorts")
+            // make List searchable!
+            .searchable(text: $searchText, prompt: "Search for a resort")
             
             // secondary view
             // if the screen is big and it's landscape mode,
@@ -61,6 +64,16 @@ struct ContentView: View {
             WelcomeView()
         }
         .phoneOnlyNavigationView()
+    }
+    
+    var filteredResorts: [Resort] {
+        if searchText.isEmpty {
+            return resorts
+        } else {
+            return resorts.filter { resort in
+                resort.name.localizedCaseInsensitiveContains(searchText)
+            }
+        }
     }
 }
 
