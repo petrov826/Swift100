@@ -12,6 +12,9 @@ struct ResortView: View {
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.dynamicTypeSize) var typeSize
     
+    @State private var selectedFacility: Facility?
+    @State private var showingFacilityAlert = false
+    
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
@@ -49,14 +52,35 @@ struct ResortView: View {
                     // Text(resort.facilities.joined(separator: ", "))
                     // A, B and C (much more natural!)
                     // NOTE: .list(type: .or) will output "A, B or C"
-                    Text(resort.facilities, format: .list(type: .and))
-                        .padding(.vertical)
+                    // Text(resort.facilities, format: .list(type: .and))
+                    //    .padding(.vertical)
+                    HStack {
+                        ForEach(resort.facilityTypes) { facility in
+                            Button {
+                                selectedFacility = facility
+                                showingFacilityAlert = true
+                            } label: {
+                                facility.icon
+                                    .font(.title)
+                            }
+                        }
+                    }
                 }
                 .padding(.horizontal)
             }
         }
         .navigationTitle("\(resort.name) in \(resort.country)")
         .navigationBarTitleDisplayMode(.inline)
+        .alert(
+            selectedFacility?.name ?? "More information",
+            isPresented: $showingFacilityAlert,
+            presenting: selectedFacility
+        ) { _ in
+            // use default actions
+        } message: { facility in
+            Text(facility.description)
+        }
+        
     }
 }
 

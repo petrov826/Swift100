@@ -34,7 +34,7 @@ struct ContentView: View {
                     Image(resort.country)
                         .resizable()
                         .scaledToFill()
-                        .frame(width: 40, height: 25)
+                         .frame(width: 40, height: 25)
                         .clipShape(RoundedRectangle(cornerRadius: 5))
                         // black edge around the flag
                         .overlay {
@@ -53,8 +53,9 @@ struct ContentView: View {
                 }
             }
             .navigationTitle("Ski Resorts")
-            // make List searchable!
+            // make List searchable
             .searchable(text: $searchText, prompt: "Search for a resort")
+            .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
             
             // secondary view
             // if the screen is big and it's landscape mode,
