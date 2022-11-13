@@ -23,6 +23,17 @@ struct ResortView: View {
                 Image(decorative: resort.id)
                     .resizable()
                     .scaledToFit()
+                    .overlay {
+                        HStack {
+                            Spacer()
+                            VStack {
+                                Spacer()
+                                Text(resort.imageCredit)
+                                    .foregroundColor(.secondary)
+                                    .padding(.all, 8)
+                            }
+                        }
+                    }
                 
                 HStack {
                     // if the type size is so large,
