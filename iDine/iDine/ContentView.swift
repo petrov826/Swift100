@@ -16,14 +16,13 @@ struct ContentView: View {
                 ForEach(menuSections) { section in
                     Section(section.name) {
                         ForEach(section.items) { item in
-                            Text(item.name)
-                                .font(.footnote)
+                            ItemRow(item: item)
                         }
                     }
                 }
             }
             .navigationTitle("Menu")
-            // .listStyle(.grouped)
+            .listStyle(.grouped)
         }
     }
 }
