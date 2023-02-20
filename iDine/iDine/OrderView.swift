@@ -18,9 +18,11 @@ struct OrderView: View {
                         HStack {
                             Text(item.name)
                             Spacer()
-                            Text("\(item.price)")
+                            Text("$\(item.price)")
                         }
                     }
+                    // swipe action to delete
+                    .onDelete(perform: deleteItems)
                 }
                 
                 Section {
@@ -28,9 +30,18 @@ struct OrderView: View {
                         CheckoutView()
                     }
                 }
+                // disable NavLink if no items selected
+                .disabled(order.items.isEmpty)
             }
             .navigationTitle("Order")
+            .toolbar {
+                EditButton()
+            }
         }
+    }
+    
+    func deleteItems(at offsets: IndexSet) {
+        order.items.remove(atOffsets: offsets)
     }
 }
 
