@@ -25,10 +25,11 @@ struct OrderView: View {
                 
                 Section {
                     NavigationLink("Place Order") {
-                        Text("Check out")
+                        CheckoutView()
                     }
                 }
             }
+            .navigationTitle("Order")
         }
     }
 }
